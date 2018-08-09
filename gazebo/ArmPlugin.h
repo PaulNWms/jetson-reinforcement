@@ -89,6 +89,10 @@ private:
 	int      runHistoryIdx;
 	int	    runHistoryMax;
 	bool     runHistory[20];
+	int	interrimHistoryIdx;
+	int	interrimHistoryMax;
+	double	interrimHistory[20];
+	int	lastAction;
 
 	physics::ModelPtr model;
 	event::ConnectionPtr updateConnection;

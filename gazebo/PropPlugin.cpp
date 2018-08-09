@@ -1,7 +1,3 @@
-/*
- * http://github.com/dusty-nv/jetson-reinforcement
- */
-
 #include "PropPlugin.h"
 
 
@@ -9,7 +5,7 @@ namespace gazebo
 {
 
 // Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(PropPlugin)
+GZ_REGISTER_MODEL_PLUGIN(PropPlugin)	
 
 //---------------------------------------------------------------------------------------
 std::vector<PropPlugin*> props;
@@ -68,20 +64,13 @@ void PropPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	this->model = _parent;
 
 	// Store the original pose of the model
-	UpdateResetPose();
+	this->originalPose = model->GetWorldPose();
 
 	// Listen to the update event. This event is broadcast every simulation iteration.
 	this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&PropPlugin::OnUpdate, this, _1));
 
 	// Track this object in the global Prop registry
 	props.push_back(this);
-}
-
-
-// UpdateResetPose
-void PropPlugin::UpdateResetPose()
-{
-	this->originalPose = model->GetWorldPose();
 }
 
 
@@ -141,6 +130,9 @@ void PropPlugin::Randomize()
 	pose.pos.x = randf(0.35f, 0.45f);
 	pose.pos.y = randf(-1.5f, 0.2f);
 	pose.pos.z = 0.0f;
+	//pose.pos.x = randf(0.02f, 0.30f);
+	//pose.pos.y = 0.0f;
+	//pose.pos.z = 0.0f;
 	
 	printf("prop random pos:  %f  %f  %f\n", pose.pos.x, pose.pos.y, pose.pos.z);
 	model->SetWorldPose(pose);

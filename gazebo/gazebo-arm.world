@@ -1,6 +1,12 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
 <world name="arm_world">
+	<!-- Because life is short. -->
+	<physics type="ode">
+		<real_time_update_rate>0.0</real_time_update_rate>
+		<max_step_size>0.01</max_step_size>
+	</physics>
+
 	<!--<include>
 		<uri>model://sun</uri>
 	</include>-->
@@ -192,6 +198,130 @@
 			</collision>
 		</link>
 
+		<!--
+		<link name="gripper_tape">
+		    <pose>0 -0.1005 1.68 0 0 0</pose>
+			<inertial>
+		        <mass>0.00000001</mass>
+		        <inertia>
+		          <ixx>0.0001</ixx>
+		          <ixy>0</ixy>
+		          <ixz>0</ixz>
+		          <iyy>0.0002</iyy>
+		          <iyz>0</iyz>
+		          <izz>0.0001</izz>
+		        </inertia>
+			</inertial>
+			<visual name="gripper_tape_visual">		   
+				<geometry>
+					<box>
+						<size>.1 .0001 .1</size>
+					</box>
+				</geometry>
+			<material>
+				<ambient>1 0 0 1</ambient>
+				<diffuse>1 0 0 1</diffuse>
+				<specular>0.1 0.1 0.1 1</specular>
+				<emissive>0 0 0 0</emissive>
+				<shader type='vertex'>
+					<normal_map>__default__</normal_map>
+				</shader>
+			</material>
+			</visual>
+			<collision name="gripper_tape_collision">    
+				<geometry>
+					<box>
+						<size>.1 .0001 .1</size>
+					</box>
+				</geometry>
+			</collision>
+			<self_collide>0</self_collide>
+			<kinematic>0</kinematic>
+			<gravity>0</gravity>
+		</link>
+		-->
+		<link name="gripper_tape2">
+		    <pose>-0.0805 0 1.68 0 0 0</pose>
+			<inertial>
+		        <mass>0.00000001</mass>
+		        <inertia>
+		          <ixx>0.0001</ixx>
+		          <ixy>0</ixy>
+		          <ixz>0</ixz>
+		          <iyy>0.0002</iyy>
+		          <iyz>0</iyz>
+		          <izz>0.0001</izz>
+		        </inertia>
+			</inertial>
+			<visual name="gripper_tape2_visual">		   
+				<geometry>
+					<box>
+						<size>.0001 .1 .1</size>
+					</box>
+				</geometry>
+			<material>
+				<ambient>1 0 0 1</ambient>
+				<diffuse>1 0 0 1</diffuse>
+				<specular>0.1 0.1 0.1 1</specular>
+				<emissive>0 0 0 0</emissive>
+				<shader type='vertex'>
+					<normal_map>__default__</normal_map>
+				</shader>
+			</material>
+			</visual>
+			<collision name="gripper_tape2_collision">    
+				<geometry>
+					<box>
+						<size>.0001 .1 .1</size>
+					</box>
+				</geometry>
+			</collision>
+			<self_collide>0</self_collide>
+			<kinematic>0</kinematic>
+			<gravity>0</gravity>
+		</link>
+
+		<link name="gripper_tape3">
+		    <pose>-0.0505 0 1.15 0 0 0</pose>
+			<inertial>
+		        <mass>0.00000001</mass>
+		        <inertia>
+		          <ixx>0.0001</ixx>
+		          <ixy>0</ixy>
+		          <ixz>0</ixz>
+		          <iyy>0.0002</iyy>
+		          <iyz>0</iyz>
+		          <izz>0.0001</izz>
+		        </inertia>
+			</inertial>
+			<visual name="gripper_tape3_visual">		   
+				<geometry>
+					<box>
+						<size>.0001 .1 .1</size>
+					</box>
+				</geometry>
+			<material>
+				<ambient>0 0 1 1</ambient>
+				<diffuse>0 0 1 1</diffuse>
+				<specular>0.1 0.1 0.1 1</specular>
+				<emissive>0 0 0 0</emissive>
+				<shader type='vertex'>
+					<normal_map>__default__</normal_map>
+				</shader>
+			</material>
+			</visual>
+			<collision name="gripper_tape3_collision">    
+				<geometry>
+					<box>
+						<size>.0001 .1 .1</size>
+					</box>
+				</geometry>
+			</collision>
+			<self_collide>0</self_collide>
+			<kinematic>0</kinematic>
+			<gravity>0</gravity>
+		</link>
+
 		<link name="gripper_middle">
 			<pose>0 0 1.77 0 0 0</pose>
 			<collision name="middle_collision">
@@ -286,7 +416,7 @@
 			</axis>
 		</joint>
 
-		<joint name="link1-joint1" type="revolute">
+		<joint name="link1-joint1" type="fixed">
 			<pose>0 0 -0.05 0 0 0</pose>
 			<child>link1</child>
 			<parent>joint1</parent>
@@ -312,7 +442,7 @@
 			</axis>
 		</joint>
 
-		<joint name="link2-joint2" type="revolute">
+		<joint name="link2-joint2" type="fixed">
 			<pose>0 0 -0.05 0 0 0</pose>
 			<child>link2</child>
 			<parent>joint2</parent>
@@ -325,44 +455,55 @@
 			</axis>
 		</joint>
 
-		<joint name="gripper_left" type="fixed">
+		<joint name="gripper_left" type="revolute">
 			<pose>0 0 -0.05 0 0 0</pose>
 			<child>gripper_left</child>
 			<parent>gripperbase</parent>
 			<axis>
-				<!--<limit>
+				<limit>
 					<lower>0</lower>
 					<upper>0</upper>
-				</limit>-->
+				</limit>
 				<xyz>0 1 0</xyz>
 			</axis>
 		</joint>
-		<joint name="gripper_right" type="fixed">
+		<joint name="gripper_right" type="revolute">
 			<pose>0 0 -0.05 0 0 0</pose>
 			<child>gripper_right</child>
 			<parent>gripperbase</parent>
 			<axis>
-				<!--<limit>
+				<limit>
 					<lower>0</lower>
 					<upper>0</upper>
-				</limit>-->
+				</limit>
 				<xyz>0 1 0</xyz>
 			</axis>
 		</joint>
 		  
-		<joint name="gripperbase" type="revolute">
+		<joint name="gripperbase" type="fixed">
             <pose>0 0 -0.05 0 0 0</pose>
             <parent>link2</parent>
             <child>gripperbase</child>
             <axis>
-			<limit>
-				<lower>0</lower>
-				<upper>0</upper>
-			</limit>
                 <xyz>0 1 0</xyz>
             </axis>
 		</joint>
 
+		<!--joint name="gripper_tape" type="fixed">
+			<pose>0 0 0 0 0 0</pose>
+			<child>gripper_tape</child>
+			<parent>gripperbase</parent>
+		</joint-->
+		<joint name="gripper_tape2" type="fixed">
+			<pose>0 0 0 0 0 0</pose>
+			<child>gripper_tape2</child>
+			<parent>gripperbase</parent>
+		</joint>
+		<joint name="gripper_tape3" type="fixed">
+			<pose>0 0 0 0 0 0</pose>
+			<child>gripper_tape3</child>
+			<parent>link2</parent>
+		</joint>
 		<joint name="gripper_middle" type="fixed">
             <pose>0 0 0 0 0 0</pose>
             <parent>gripperbase</parent>
@@ -396,10 +537,11 @@
 	<model name="camera">
 		<link name="link">
 		<gravity>false</gravity>
-		<!--<pose>-1.0 -3.0 0.85 0 0 1.0</pose>-->
-		<!--<pose>0.75 -3.0 0.85 0 0 1.5</pose>-->
-		<!--<pose>0.0 0.0 3.5 0 1.57079632679 0</pose>-->
-                <pose>0.5 -3.0 0.85 0 0 1.57</pose>
+		<!--pose>-1.0 -3.0 0.85 0 0 1.0</pose-->
+		<!--pose>0.75 -3.0 0.85 0 0 1.5</pose-->
+		<pose>0.0 0.0 3.5 0 1.57079632679 0</pose>
+                <!--pose>0.5 -3.0 0.85 0 0 1.57</pose-->
+		<!--pose>4.0 -0.5 0.85 0 0 3.141593</pose-->
 		<inertial>
 			<mass>0.1</mass>
 		</inertial>
@@ -428,7 +570,7 @@
 				</noise>-->
 			</camera>
 			<always_on>1</always_on>
-			<update_rate>20</update_rate>
+			<update_rate>10</update_rate>
 			<visualize>true</visualize>
 		</sensor>
 		</link>
@@ -436,103 +578,18 @@
 
 	
 
-
-	<!--               -->
-	<!-- BOX/COLLISION -->
-	<!--               -->
-	<!--<model name="box">
-		<link name="link">
-		<pose>0.75 0.75 0 0 0 0</pose>
-		
-		<collision name="box_collision">
-			<geometry>
-				<box>
-					<size>0.10 0.10 0.10</size>
-				</box>
-			</geometry>
-		</collision>
-
-		<visual name="visual">
-			<geometry>
-				<box>
-					<size>0.10 0.10 0.10</size>
-				</box>
-			</geometry>
-			<material>
-				<ambient>0.3 0.3 0.3 1</ambient>
-				<diffuse>1.0 0.5 0.0 1</diffuse>
-				<specular>0.01 0.01 0.01 1</specular>
-				<emissive>0 0 0 1</emissive>
-				<shader type='vertex'>
-					<normal_map>__default__</normal_map>
-				</shader>
-			</material>
-		</visual>
-
-		<sensor name='my_contact' type='contact'>
-			<contact>
-				<collision>box_collision</collision>
-			</contact>
-		</sensor>
-		</link>
-		<plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
-
-	</model>-->
-
-
-	<!--               -->
-	<!-- BALL/COLLISION -->
-	<!--               -->
-    <!--<model name="ball">
-		<link name="link">
-		<pose>0.75 0.75 0.0 0 0 0</pose>
-		<collision name="ball_collision">
-			<geometry>
-				<sphere>
-					<radius>0.05</radius>
-				</sphere>
-			</geometry>
-		</collision>
-
-		<visual name="visual">
-			<geometry>
-				<sphere>
-					<radius>0.05</radius>
-				</sphere>
-			</geometry>
-			<material>
-				<ambient>0.3 0.3 0.3 1</ambient>
-				<diffuse>1.0 0.5 0.0 1</diffuse>
-				<specular>0.01 0.01 0.01 1</specular>
-				<emissive>0 0 0 1</emissive>
-				<shader type='vertex'>
-					<normal_map>__default__</normal_map>
-				</shader>
-			</material>
-		</visual>
-
-		<sensor name='my_contact' type='contact'>
-			<contact>
-				<collision>ball_collision</collision>
-			</contact>
-		</sensor>
-		</link>
-
-		<plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
-    </model>-->
-
 	<!--               -->
 	<!-- TUBE/COLLISION -->
 	<!--               -->
 	<model name="tube">
-		<link name="link">
-		<pose>1.15 0 0 0 0 0</pose>
+		<link name="tube_link">
+		<pose>0.75 0.75 0 0 0 0</pose>
 		
 		<collision name="tube_collision">
 			<geometry>
 			     <cylinder>
-					<radius>0.1</radius>
-					<length>0.35</length>
+					<radius>0.05</radius>
+					<length>0.15</length>
 		              </cylinder>
 			</geometry>
 		</collision>
@@ -540,8 +597,8 @@
 		<visual name="visual">
 			<geometry>
 				<cylinder>
-					<radius>0.1</radius>
-					<length>0.35</length>
+					<radius>0.05</radius>
+					<length>0.15</length>
 		              </cylinder>
 			</geometry>
 			<material>
@@ -555,12 +612,22 @@
 			</material>
 		</visual>
 
+
 		<sensor name='my_contact' type='contact'>
 			<contact>
 				<collision>tube_collision</collision>
 			</contact>
 		</sensor>
-		</link>
+    </link>
+
+        <joint name="tube_joint" type="fixed">
+			<pose>0 0 0 0 0 0</pose>
+			<child>link</child>
+			<parent>world</parent>
+			<axis>
+				<xyz>0 0 1</xyz>
+			</axis>
+		</joint>
 		<plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
 	</model>
 

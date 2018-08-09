@@ -46,10 +46,9 @@ public:
 	virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
 	virtual void OnUpdate(const common::UpdateInfo & /*_info*/);
 
-	void UpdateResetPose();
 	void ResetDynamics();
 	void Randomize();
-	
+
 	physics::ModelPtr model;	// Pointer to the model
 
 private:

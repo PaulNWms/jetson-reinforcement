@@ -7,8 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torch.autograd as autograd
 from torch.autograd import Variable
-from torch.distributions import Categorical
 
 
 parser = argparse.ArgumentParser(description='PyTorch REINFORCE example')
@@ -19,8 +19,8 @@ parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 543)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
-parser.add_argument('--log-interval', type=int, default=1, metavar='N',
-                    help='interval between training status logs (default: 1)')
+parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+                    help='interval between training status logs (default: 10)')
 args = parser.parse_args()
 
 # print(gym.envs.registry.all())
@@ -31,10 +31,6 @@ FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
 ByteTensor = torch.cuda.ByteTensor if use_cuda else torch.ByteTensor
 Tensor = FloatTensor
-
-if use_cuda:
-	torch.set_default_tensor_type('torch.cuda.FloatTensor')
-
 
 print('use_cuda: ' + str(use_cuda))
 print('use_env:  ' + args.env)
@@ -52,20 +48,19 @@ observation_dim = env.observation_space.shape[0]
 print('observation dimensions: ' + str(observation_dim))
 
 
-
 class Policy(nn.Module):
     def __init__(self):
         super(Policy, self).__init__()
         self.affine1 = nn.Linear(observation_dim, 128)
         self.affine2 = nn.Linear(128, num_actions)
 
-        self.saved_log_probs = []
+        self.saved_actions = []
         self.rewards = []
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
         action_scores = self.affine2(x)
-        return F.softmax(action_scores, dim=1)
+        return F.softmax(action_scores)
 
 
 policy = Policy()
@@ -81,56 +76,46 @@ def select_action(state):
     state = torch.from_numpy(state).float().unsqueeze(0)
     state = state.cuda()
     probs = policy(Variable(state))
-    m = Categorical(probs)
-    action = m.sample()
-    policy.saved_log_probs.append(m.log_prob(action))
-    return action.data[0]
+    action = probs.multinomial()
+    policy.saved_actions.append(action)
+    return action.data
 
 
 def finish_episode():
     R = 0
-    policy_loss = []
     rewards = []
     for r in policy.rewards[::-1]:
         R = r + args.gamma * R
         rewards.insert(0, R)
     rewards = torch.Tensor(rewards)
     rewards = (rewards - rewards.mean()) / (rewards.std() + np.finfo(np.float32).eps)
-    for log_prob, reward in zip(policy.saved_log_probs, rewards):
-        policy_loss.append(-log_prob * reward)
+    for action, r in zip(policy.saved_actions, rewards):
+        action.reinforce(r)
     optimizer.zero_grad()
-    policy_loss = torch.cat(policy_loss).sum()
-    policy_loss.backward()
+    autograd.backward(policy.saved_actions, [None for _ in policy.saved_actions])
     optimizer.step()
     del policy.rewards[:]
-    del policy.saved_log_probs[:]
+    del policy.saved_actions[:]
 
 
-def main():
-    running_reward = 10
-    for i_episode in count(1):
-        state = env.reset()
-        ep_reward = 0
-        for t in range(10000):  # Don't infinite loop while learning
-            action = select_action(state)
-            state, reward, done, _ = env.step(action)
-            if args.render:
-                env.render()
-            policy.rewards.append(reward)
-            ep_reward = ep_reward + reward
-            if done:
-                break
+running_reward = 10
+for i_episode in count(1):
+    state = env.reset()
+    for t in range(10000): # Don't infinite loop while learning
+        action = select_action(state)
+        state, reward, done, _ = env.step(action[0,0])
+        if args.render:
+            env.render()
+        policy.rewards.append(reward)
+        if done:
+            break
 
-        running_reward = running_reward * 0.99 + t * 0.01
-        finish_episode()
-        if i_episode % args.log_interval == 0:
-            print('Episode {:03d}   Reward: {:+7.2f}   Last length: {:03d}   Average length: {:.2f}'.format(
-                i_episode, ep_reward, t, running_reward))
-        #if running_reward > env.spec.reward_threshold:
-        #    print("Solved! Running reward is now {} and "
-        #          "the last episode runs to {} time steps!".format(running_reward, t))
-            #break
-
-
-if __name__ == '__main__':
-    main()
+    running_reward = running_reward * 0.99 + t * 0.01
+    finish_episode()
+    if i_episode % args.log_interval == 0:
+        print('Episode {}\tLast length: {:5d}\tAverage length: {:.2f}'.format(
+            i_episode, t, running_reward))
+    if running_reward > 200:
+        print("Solved! Running reward is now {} and "
+              "the last episode runs to {} time steps!".format(running_reward, t))
+        break

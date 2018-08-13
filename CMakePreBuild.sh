@@ -19,20 +19,13 @@ echo "[Pre-build]  installing Torch/LUA into:  $TORCH_PREFIX"
 #set -e
 
 
-#
-# install jetson-utils prerequisites
-#
-sudo apt-get update
-sudo apt-get install libglew-dev glew-utils libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libglib2.0-dev
-
-
 # 
 # (prompt) install Gazebo7
 #
 while true; do
     read -p "[Pre-build]  Do you wish to install Gazebo robotics simulator (y/N)? " yn
     case $yn in
-        [Yy]* ) sudo apt-get install -y gazebo7 libgazebo7-dev; break;;
+        [Yy]* ) sudo apt-get update; sudo apt-get install -y gazebo7 libgazebo7-dev; break;;
         [Nn]* ) echo "[Pre-build]  skipping Gazebo installation"; break;;
         * ) echo "[Pre-build]  Please answer yes or no.";;
     esac
@@ -49,37 +42,16 @@ if [ $BUILD_PYTORCH = "ON" ] || [ $BUILD_PYTORCH = "YES" ] || [ $BUILD_PYTORCH =
 	sudo apt-get install python-pip
 
 	# upgrade pip
+	pip install -U pip
 	pip --version
-	pip install --upgrade pip==9.0.1
-	pip --version	# pip 9.0.1 from /home/ubuntu/.local/lib/python2.7/site-packages (python 2.7)
-
-	# lock OpenAI Gym before version 10 (breaking changes)
-	sudo pip install gym==0.9.1
-
-	# stuff for OpenAI Gym examples
-	sudo apt-get install python-tk python-gi-cairo
-	sudo apt-get install libfreetype6-dev	# needed by matplotlib
-
-	sudo pip install matplotlib
-	sudo pip install pyglet==1.3.1	# lock pyglet because we need to patch it
-
-	sudo sed -i 's/_have_getprocaddress = True/_have_getprocaddress = False/' /usr/local/lib/python2.7/dist-packages/pyglet/gl/lib_glx.py
+	# pip 9.0.1 from /home/ubuntu/.local/lib/python2.7/site-packages (python 2.7)
 
 	# setproctitle extension used by A3G
-	sudo pip install setproctitle 
-	
+	# sudo pip install setproctitle 
+
 	# install numpy
 	sudo pip install numpy
-
-	# (prompt) install Jupyter/IPython
-	while true; do
-	    read -p "[Pre-build]  Do you wish to install support for Jupyter/IPython notebook (y/N)? " yn
-	    case $yn in
-		   [Yy]* ) sudo apt-get install -y ipython ipython-notebook; sudo pip install jupyter; break;;
-		   [Nn]* ) echo "[Pre-build]  skipping Jupyter/IPython installation"; break;;
-		   * ) echo "[Pre-build]  Please answer yes or no.";;
-	    esac
-	done
+	sudo apt-get install python-gi-cairo
 
 	# see https://github.com/torch/cutorch/issues/797
 	# use <= v0.2.0
@@ -124,6 +96,8 @@ if [ $BUILD_PYTORCH = "ON" ] || [ $BUILD_PYTORCH = "YES" ] || [ $BUILD_PYTORCH =
 
 	echo "[Pre-build]  pyTorch setup complete"
 fi
+
+sudo apt-get install libglew-dev glew-utils libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libglib2.0-dev
 
 #
 # build Torch?

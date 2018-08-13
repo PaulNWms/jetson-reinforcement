@@ -6,8 +6,6 @@ print('importing torch...')
 import torch
 
 print('import complete.')
-print(torch.__version__)
-
 print('cuda available: ' + str(torch.cuda.is_available()))
 print('testing basic tensor operations')
 
